@@ -267,12 +267,15 @@ const age: number = 123;
 console.log(typeof age); // number
 
 const arr: number[] = [1, 2, 3];
-console.log(typeof arr); // number[]
+console.log(typeof arr); // number[] 실제로는 object라고 출력됨
 
 const obj: { age: number } = { age: 10 };
-console.log(typeof obj); //{age:number};
+console.log(typeof obj); //{age:number}; 실제로는 object라고 출력됨
 
 type T = { age: number };
 const obj: T = { age: 10 };
-console.log(typeof obj); // T
+console.log(typeof obj); // T  실제로는 object라고 출력됨
 ```
+
+- `기본형을 제외하고 참조형 데이터들은 직접 비교를 하는 방안을 찾아야한다`
+ - 타입 좁히기(Type Guard) 문법, 유틸리티 타입 사용 문법등의 학습 필요
