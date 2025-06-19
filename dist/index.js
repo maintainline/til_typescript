@@ -1,8 +1,5 @@
-let anyVar = 100;
-anyVar = "안녕";
-anyVar = true;
-anyVar = null;
-anyVar = undefined;
-anyVar = symbol("age");
-anyVar = BigInt(999999999);
+let a = 0;
+a = a + 1;
+a += 1;
+a++;
 export {};
