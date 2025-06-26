@@ -416,6 +416,26 @@ const 블랙핑크_멤버_제니 = {
 블랙핑크_멤버_제니.sing();
 ```
 
+```ts
+type 블랙핑크멤버타입 = {
+  이름: string;
+  생일: string;
+  sing: () => void;
+};
+
+const 블랙핑크_멤버_제니: 블랙핑크멤버타입 = {
+  이름: "제니",
+  생일: "96-01",
+  sing: function () {
+    //  기능(Method)
+
+    console.log("제니가 노래합니다.");
+  },
+};
+
+블랙핑크_멤버_제니.sing();
+```
+
 ```js
 const 블랙핑크_멤버_제니 = {
   이름: "제니",
@@ -434,6 +454,7 @@ const 블랙핑크_멤버_제니 = {
 
 ### 6.2 객체 생성자 함수로 생성된 객체에 기능 추가하기
 
+- TypeScript 에서는 `class 문법을 사용하는것이 편하다.`
 - new 를 반드시 붙여서 함수를 실행해야만 합니다.
 - 반드시 관례살 `파스칼케이스(pascal)`로 이름을 정한다.
 
@@ -454,7 +475,7 @@ const 학생_3 = new Student();
 {no:"0103", name:"홍길동"} // 결과
 ```
 
-- 업그레이드
+- 업그레이드(TypeScript 는 `class` 를 쓰자)
 
 ```js
 function Student(_번호,_이름) {
@@ -473,7 +494,7 @@ const 학생_3 = new Student("0808","홍길동");
 {no:"0808", name:"홍길동"} // 결과
 ```
 
-- 메서드(Method) 추가
+- 메서드(Method) 추가 (TypeScript 는 `class` 를 쓰자)
 
 ```js
 function Student(_번호,_이름) {
@@ -498,13 +519,13 @@ const 학생_3 = new Student("0808","홍길동");
 {no:"0808", name:"홍길동"} // 결과
 ```
 
-### 6.3 객체에 속해 있는 메서드를 축약해서 생성하는 문법
+### 6.3 객체에 속해 있는 메서드를 `축약해서 생성`하는 문법
 
 ```js
 const iu = {
   name: "아이유",
   sing: function () {
-    console.log(`${this.naem}이 노래해요.`);
+    console.log(`${this.name}이 노래해요.`);
   },
   dance() {
     //메서드 축약형
@@ -513,6 +534,26 @@ const iu = {
 };
 ```
 
+```ts
+type IUType = {
+  name: string;
+  sing: () => void;
+  dance: () => void;
+};
+const iu: IUType = {
+  name: "아이유",
+  sing: function () {
+    console.log(`${this.name}이 노래해요.`);
+  },
+  dance() {
+    //메서드 축약형
+    console.log(`${this.name}이 춤을 춰요.`);
+  },
+};
+```
+
+- 아래는 TypeScript 의 Class로 표현하자.
+
 ```js
 function Student(_번호, _이름) {
   this.no = _번호;
@@ -520,4 +561,263 @@ function Student(_번호, _이름) {
   this.say = function () {};
   this.hi = () => {};
 }
+```
+
+## 7. 객체를 복사하기
+
+### 7.1. 값의 복사 (string, number, null, undefind ...)
+
+```js
+const age = 10;
+// age = 12; // const 에러. 값을 바꾸면 안됨
+console.log(age);
+
+// 값을 복사하였다.
+let nowAge = age;
+nowAge = 12;
+console.log(nowAge);
+```
+
+```ts
+const age: number = 10;
+// age = 12; // const 에러. 값을 바꾸면 안됨
+console.log(age);
+
+// 값을 복사하였다.
+let nowAge: number = age;
+nowAge = 12;
+console.log(nowAge);
+```
+
+### 7.2. 참조 복사
+
+```js
+const 아이유 = { job: "가수" };
+아이유 = "10살"; // const 는 불변 `{}`
+
+//아래는 참조로 접근함으로 변경이 가능하다.
+// 아이유가 const, job은 const가 아님
+아이유.job = "연기자"; // 객체{}의 const라 값 변경가능
+
+const 아이돌 = 아이유; // const 아이유 의 job 이란 주소를 가져옴
+아이돌.job = "개발자"; // const 아이유 의 job 이란 주소를 가져와서 "개발자"정의
+
+아이유.job; // 개발자
+아이돌.job; // 개발자
+
+function copyWho(누구) {
+  const go = 누구;
+  go.job = "할머니";
+}
+copyWho(아이유);
+아이유.job; // 할머니
+아이돌.job; // 할머니
+```
+
+```ts
+const 아이유: { job: string } = { job: "가수" };
+아이유 = "10살"; // const 는 불변 `{}`
+
+//아래는 참조로 접근함으로 변경이 가능하다.
+// 아이유가 const, job은 const가 아님
+아이유.job = "연기자"; // 객체{}의 const라 값 변경가능
+
+const 아이돌: { job: string } = 아이유; // const 아이유 의 job 이란 주소를 가져옴
+아이돌.job = "개발자"; // const 아이유 의 job 이란 주소를 가져와서 "개발자"정의
+
+아이유.job; // 개발자
+아이돌.job; // 개발자
+
+function copyWho(누구: { job: string }) {
+  const go = 누구;
+  go.job = "할머니";
+}
+copyWho(아이유);
+아이유.job; // 할머니
+아이돌.job; // 할머니
+```
+
+- 객체는 반드시 아래처럼 복사해야한다.
+- 수작업으로 하는 경우
+
+```js
+// 아래는 주소를 복사한것
+const 아이유 = { job: "가수", age: 10, song: "마시메로" };
+const 아이돌 = { job: 아이유.job, age: 아이유.age, song: 아이유.song };
+// 객체 구조 분해 할당
+const { job, age, song } = 아이유;
+```
+
+```ts
+const 아이유: {
+  job: string;
+  age: number;
+  song: string;
+} = { job: "가수", age: 10, song: "마시메로" };
+
+const 아이돌: {
+  job: string;
+  age: number;
+  song: string;
+} = { job: 아이유.job, age: 아이유.age, song: 아이유.song };
+```
+
+- `객체 구조 분해할당` 강력 추천(리엑트 부터 무조건 사용)
+
+```js
+const 아이유 = { job: "가수", age: 10, song: "마시메로" };
+const { job, age, song } = 아이유;
+
+const 아이돌 = { job, age, song };
+```
+
+```ts
+type 아이유타입 = {
+  job: string;
+  age: number;
+  song: string;
+};
+const 아이유: 아이유타입 = { job: "가수", age: 10, song: "마시메로" };
+
+const { job, age, song }: 아이유타입 = 아이유;
+
+const 아이돌: 아이유타입 = { job, age, song };
+```
+
+- `객체 구조 분해 할당을` 함수에서 사용하기
+
+```js
+const 아이유 = { job: "가수", age: 10, song: "마시메로" };
+
+function 분해함수({ job, age }) {
+  console.log(job);
+  console.log(age);
+  return { job, age };
+}
+분해함수(아이유);
+```
+
+```ts
+type 아이유타입 = {
+  job: string;
+  age: number;
+  // ? 옵션 : 속성이 없을수도 있지만 괜찮아!
+  song?: string;
+};
+
+const 아이유: 아이유타입 = { job: "가수", age: 10, song: "마시메로" };
+
+function 분해함수({ job, age }: 아이유타입) {
+  console.log(job);
+  console.log(age);
+  return { job, age };
+}
+분해함수(아이유);
+```
+
+## 8. 객체 구조 분해 할당(DeStructuring)
+
+```js
+const idol = { name: "제이홉" };
+const { name } = idol;
+```
+
+```ts
+const idol: { name: string } = { name: "제이홉" };
+const { name }: { name: string } = idol;
+```
+
+```js
+const idol = { name: "제이홉" };
+const { name, age = 30 } = idol;
+```
+
+```ts
+type IDOLType = { name: string; age?: number };
+const idol: IDOLType = { name: "제이홉" };
+const { name, age = 30 }: IDOLType = idol;
+```
+
+```js
+function hi({ name, age }) {
+  console.log(name);
+  console.log(age);
+}
+
+hi({ name: "지민", age: 30 });
+```
+
+```ts
+function hi({ name, age }: { name: string; age: number }) {
+  console.log(name);
+  console.log(age);
+}
+
+hi({ name: "지민", age: 30 });
+```
+
+```js
+const user = {
+  name: "정국",
+  address: { city: "서울", age: 20 },
+};
+
+const {
+  name,
+  address: { city, age },
+} = user;
+```
+
+```ts
+type UserAddressType = {
+  city: string;
+  age: number;
+};
+
+type UserType = {
+  name: string;
+  address: { city: string; age: number };
+};
+
+const user: UserType = {
+  name: "정국",
+  address: { city: "서울", age: 20 },
+};
+
+const {
+  name,
+  address: { city, age },
+}: UserType = user;
+```
+
+```js
+const member = { userName: "뷔", age: 30, group: "BTS" };
+// const { userName, age, group } = member;
+
+// 사용하지 않은 나머지 속성만 모으는 연산자
+const { ...rest } = member;
+console.log(rest); //{ userName: '뷔', age: 30, group: 'BTS' }
+
+const { userName, ...who } = member;
+console.log(userName); // 뷔
+console.log(who); // { age: 30, group: 'BTS' }
+```
+
+```ts
+type MemberType = {
+  userName: string;
+  age: number;
+  group: string;
+};
+
+const member: MemberType = { userName: "뷔", age: 30, group: "BTS" };
+
+// 사용하지 않은 나머지 속성만 모으는 연산자
+const { ...rest }: MemberType = member;
+console.log(rest); //{ userName: '뷔', age: 30, group: 'BTS' }
+
+const { userName, ...who }: MemberType = member;
+console.log(userName); // 뷔
+console.log(who); // { age: 30, group: 'BTS' }
+
 ```
