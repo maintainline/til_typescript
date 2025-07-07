@@ -1,16 +1,30 @@
-type UserType = { age: number; study: boolean };
+type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
-const hong: UserType = { age: 10, study: true };
-const kim: UserType = { age: 20, study: false };
-const park: UserType = { age: 22, study: true };
-
-const 학생목록배열: UserType[] = [hong, kim, park];
-const 학생목록배열: UserType[] = 학생목록배열.filter(function (
-  요소: UserType,
-  인덱스: number,
-  원본배열: UserType[]
-) {
-  if (요소.study) {
-    return 요소;
+async function getData<T>(
+  addr: string,
+  method: Method
+): Promise<T | undefined> {
+  const url: string = `https://jsonplaceholder.typicode.com/${addr}`;
+  try {
+    const response: Response = await fetch(url, { method });
+    if (response.ok) {
+      const result: T = await response.json();
+      return result;
+    }
+  } catch (error) {
+    console.log(error);
   }
-});
+}
+
+///전체 POST 글 가져오기
+type PostType = { userId: number; id: number; title: string; body: string };
+type AlbumType = { userId: number; id: number; title: string };
+
+async function getPosts() {
+  try {
+    const res = await getData<PostType[]>("posts", "GET");
+    const res2 = await getData<AlbumType[]>("albums", "GET");
+  } catch (error) {
+    console.log(`${error}가 발생하였습니다.`);
+  }
+}
