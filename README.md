@@ -245,3 +245,224 @@ function mergeArr<T, U>(arr1: T[], arr2: U[]): (T | U)[] {
 let result: (string | number)[] = mergeArr([1, 2, 3], ["a", "b", "c"]);
 ```
 
+- 함수의 데이터 종류의 변경 진행과정
+
+```ts
+// 배열의 특정 요소를 인덱스를 가져오기
+// 배열은 length 라는 속성이 있다.(길이, 요소 개수)
+// 배열은 요소의 순서 (index)가 있습니다.
+
+function getItemIdex(
+  배열: (number | string | boolean)[],
+  인덱스: number
+): number | string | boolean {
+  return 배열[인덱스];
+}
+// 규칙 -> 반드시 숫자 배열이어야 한다.(배열 종류에 제한이 걸림)
+const result = getItemIdex([4, 7, 9], 2);
+const result2 = getItemIdex(["hello", "hi"], 2);
+const result3 = getItemIdex([true, false], 2);
+```
+
+- any 로 해결하면 데이터 체크를 할 수 없다.
+- 현재 작동이 잘 될수 는 있으나. 나중에 에러가 발생할 가능성이 많음.
+
+```ts
+function getItemIdex(배열: any[], 인덱스: number): any {
+  return 배열[인덱스];
+}
+// 규칙 -> 반드시 숫자 배열이어야 한다.(배열 종류에 제한이 걸림)
+const result: any = getItemIdex([4, 7, 9], 2);
+const result2: any = getItemIdex(["hello", "hi"], 2);
+const result3: any = getItemIdex([true, false], 2);
+```
+
+- `Generic을 사용`하면 코딩중에 오류발견이 수월하다.(any 보다 추천)
+- 서비스 중에도 대응이 바로 가능하다.
+
+```ts
+function getItemIdex<T>(배열: T[], 인덱스: number): T {
+  return 배열[인덱스];
+}
+// 규칙 -> 반드시 숫자 배열이어야 한다.(배열 종류에 제한이 걸림)
+const result: number = getItemIdex([4, 7, 9], 2);
+const result2: string = getItemIdex(["hello", "hi"], 2);
+const result3: boolean = getItemIdex([true, false], 2);
+const result4: string | number | boolean = getItemIdex(
+  [true, 1, "hi", null],
+  2
+);
+```
+
+- 기본적으로 진행한 함수
+
+```ts
+// 배열의 요소 중 값이 있는지 파악가능
+function findItem(배열: (string | number)[], 값: string | number): boolean {
+  return 배열.includes(값);
+}
+const result = findItem(["수영", "공부", "요리"], "운동");
+const result1 = findItem([12, 20, 33], 20);
+```
+
+- any로 해결했을때
+
+```ts
+function findItem(배열: any[], 값: any): any {
+  return 배열.includes(값);
+}
+const result = findItem(["수영", "공부", "요리"], "운동");
+const result1 = findItem([12, 20, 33], 20);
+```
+
+- Generic 사용
+
+```ts
+function findItem<T>(배열: T[], 값: T): boolean {
+  return 배열.includes(값);
+}
+const result = findItem(["수영", "공부", "요리"], "운동");
+const result1 = findItem([12, 20, 33], 20);
+const result2 = findItem([12, "hi", false], 20);
+```
+
+## 인터페이스에서 제네릭 살펴보기
+
+- 인터페이스는 데이터 모양이 객체이다.
+- 인터페이스는 객체만을 위한 문법이다.
+- 인터페이스 설계과정
+
+```ts
+// 백엔드와 비동기 통신을 하는 중의 과정을 위한 객체 설계
+
+interface ApiResponse {
+  success: boolean;
+  data: string | string[];
+}
+const loginApi: ApiResponse = {
+  success: true,
+  data: "ok",
+};
+const todoApi2: ApiResponse = {
+  success: true,
+  data: ["공부", "운동", "휴식"],
+};
+```
+
+- 앞으로 또 바뀔 소지가 있을것 같다.. 라고 생각
+- any로 사용 해봄
+
+```ts
+interface ApiResponse {
+  success: any;
+  data: any | any[];
+}
+const loginApi: ApiResponse = {
+  success: true,
+  data: "ok",
+};
+const todoApi2: ApiResponse = {
+  success: false,
+  data: ["공부", "운동", "휴식"],
+};
+```
+
+- Generic으로 해결하기.
+- 코딩중 오류와 실행중 오류를 파악하기 용이함!
+
+```ts
+interface ApiResponse<T> {
+  success: boolean;
+  data: T | T[];
+}
+const loginApi: ApiResponse<string> = {
+  success: true,
+  data: "ok",
+};
+const todoApi2: ApiResponse<string> = {
+  success: false,
+  data: ["공부", "운동", "휴식"],
+};
+```
+
+- 인터페이스에서 `여러개의 Generic` 활용하기
+
+```ts
+interface ApiResponse<T, U, V> {
+  success: T;
+  data: U | V[];
+}
+const loginApi: ApiResponse<boolean, string, string> = {
+  success: true,
+  data: "ok",
+};
+
+const todoApi: ApiResponse<number, string, string> = {
+  success: 0,
+  data: ["공부", "운동", "휴식"],
+};
+```
+
+## 클래스에서 Generic 살펴보기
+
+- 일반적인 클래스 구성
+
+```ts
+// 저장하기 관련 클래스
+class TodoStorage {
+  // 내부에서만 사용할변수
+  private items: string[] = [];
+  // 메소드 만으로 즉. 검증된 과정으로만 내부 item 배열 접근
+  add(item: string): void {
+    this.items.push(item);
+  }
+  read(): string[] {
+    return this.items;
+  }
+}
+
+const result = new TodoStorage();
+// result 에는 인스턴스로서 {} 가 저장됨
+// result.items = ["이름1", "이름2"]; // 접근 값 변경 불가
+// console.log(result.items); // 읽을수도 없다.
+result.add("이름");
+result.read();
+```
+
+- 다양한 데이터 종류를 위해서 any변경
+
+```ts
+// 저장하기 관련 클래스
+class TodoStorage {
+  private items: any[] = [];
+  add(item: any): void {
+    this.items.push(item);
+  }
+  read(): any[] {
+    return this.items;
+  }
+}
+
+const result = new TodoStorage();
+result.add("이름");
+result.read();
+```
+
+- Generic으로 활용
+
+```ts
+// 저장하기 관련 클래스
+class TodoStorage<T> {
+  private items: T[] = [];
+  add(item: T): void {
+    this.items.push(item);
+  }
+  read(): T[] {
+    return this.items;
+  }
+}
+
+const result = new TodoStorage<string>();
+result.add("이름");
+result.read();
+```
