@@ -1,14 +1,9 @@
-// 저장하기 관련 클래스
-class TodoStorage<T> {
-  private items: T[] = [];
-  add(item: T): void {
-    this.items.push(item);
-  }
-  read(): T[] {
-    return this.items;
-  }
+function getScore(subject: string, score: number) {
+  console.log(`${subject}의 점수는 ${score}입니다.`);
 }
+/**
+ * ReturnType 은 함수의 매개변수 데이터 종류 추출
+ * [subject: string, score: number]
+ */
 
-const result = new TodoStorage<string>();
-result.add("이름");
-result.read();
+type ScoreType = Parameters<typeof getScore>;
