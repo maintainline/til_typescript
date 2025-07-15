@@ -1,240 +1,121 @@
-# utility
+# ts 심화 - 기본타입
 
-- 이미 만들어둔 `type 을 더 쉽게 사용`하는 도구
-- 기존 유명 ts 라이브러리 분석 및 활용에 도움이 됨.
-- 경험이 쌓이면 자주 활용하는 문법
+- 굳이 타입을 작성하지 않아도 괜찮다.
+- VSCode가 `타입추론`을 잘해 준다면 생략하자
 
-## 1. Partial<T>
-
-- 모든 속성을 ? 로 변환함(Optional) : 선택적 속성
+## 총 7가지의 기본타입
 
 ```ts
-interface Student {
+let strVar = "string";
+let numVar = 1;
+let bigVar = BigInt(999999);
+let boolVar = true;
+let symbolVar = Symbol("symbol");
+// 아래는 타입추론이 문법적으로 다르다.
+let nullVar: any = null; // 타입추론결과가 any 로 나옴
+let null2Var: null = null; // 타입에 관여
+// 아래는 타입추론이 문법적으로 다르다.
+let undefinedVar: any = undefined; // 타입추론결과가 any 로 나옴
+let undefined2Var: undefined = undefined; // 타입에 관여
+```
+
+## TS에만 존재하는 기본형 타입
+
+### 1. any
+
+- 정말 자주 사용함. 타입이 중요하지 않을때 많이 쓰임
+- 사용은 하지만, 과도하게 사용은 하지말자
+- `치트키`
+- any 타입은 어디에나 사용가능
+- any 타입은 어느곳에도 할당, 즉 대입이 가능함.
+
+```ts
+let anyVar: any = 1450;
+let strVar = anyVar;
+let numVar = anyVar;
+let bigVar = BigInt(anyVar);
+let boolVar = anyVar;
+let symbolVar = anyVar;
+let nullVar = anyVar;
+let undefinedVar = anyVar;
+```
+
+### 2. unknown
+
+- any 와 용도가 비슷한 느낌
+- any 처럼 어떤것도 값을 담을 수 있다.
+- 다른 변수에 담기, 즉 할당은 못함
+- 입력은 되지만, 할당하지는 못하는 특징
+
+```ts
+let unknownVar: unknown;
+unknownVar = 100;
+unknownVar = "string";
+unknownVar = true;
+
+// 아래부터는 에러
+let numVar: number = unknownVar;
+//'unknown' 형식은 'number' 형식에 할당할 수 없습니다.
+```
+
+### 3. never
+
+- 어떤 타입도 `저장 또는 리턴 하지 않겠다`는 의지 표현
+- 절대로 발생하지 않을 것이라는 의지 표현
+- 예외처리, 무한루프 처리에 활용
+
+```ts
+// 아래는 모두다 에러입니다.
+let neverVar: never = null;
+let never2Var: never = undefined;
+let never3Var: never = 1;
+let never4Var: never = "string";
+//'위의 값' 형식은 'never' 형식에 할당할 수 없습니다.
+```
+
+# ts 심화 - 목록(배열) 타입
+
+- 리스트 타입
+
+```ts
+// 타입추론 잘 정리됨
+let numberArr = [1, 2, 3];
+let strArr = ["hong", "kim"];
+let Arr = [true, 3, "hello"];
+```
+
+```ts
+// genaric 구성
+let numberArr: Array<number> = [1, 2, 3];
+let strArr: Array<string> = ["hong", "kim"];
+let Arr: Array<boolean | number | string> = [true, 3, "hello"];
+```
+
+# ts 심화 - Type, Interface 타입
+
+## 1. type 키워드로 정의하기
+
+- 기본형 타입도 type 키워드로 별칭을 만들 수 있다.
+
+```ts
+type HiType = string;
+let hi: HiType = "Hello";
+
+type AgeType = number;
+let age: AgeType = 20;
+```
+
+- `복잡한 객체 형태`의 데이터도 type 키워드로 별칭을 만들 수 있다.
+
+```ts
+type IdolType = {
   name: string;
   age: number;
-}
-//반드시 속성이 있어야함
-const iu: Student = {
-  name: "iu",
-  age: 30,
+  year: number;
 };
-// Partial 을 이용해서 선택적 속성만들기
-//변환됨 : {name?:string , age?:number}
-const jimin: Partial<Student> = {
-  name: "jimin",
+let bts: IdolType = {
+  name: "bts",
+  age: 20,
+  year: 2020,
 };
 ```
-
-## 2. Requied <T>
-
-- 모든 속성을 필수로 바꿔주는 문법
-
-```ts
-interface UserConfig {
-  darkMode?: boolean;
-  fontSize?: number;
-}
-const iu: UserConfig = {
-  darkMode: true,
-};
-
-//위의 타입을 필수 요소로 변경하고자 함
-// Required 를 사용하여 필수요소로 변경시킴
-// {darkMode:string , fontSize:number}
-
-const jimin: Required<UserConfig> = {
-  darkMode: true,
-  fontSize: 20,
-};
-```
-
-## 3. Readonly<T>
-
-- 모든 속성을 초기값 설정 후 변경 못하게 하는 문법
-
-```ts
-interface UserConfig {
-  darkMode?: boolean;
-  fontSize?: number;
-}
-const iu: UserConfig = {
-  darkMode: true,
-  fontSize: 20,
-};
-iu.fontSize = 11; // 변경이 가능
-
-/*
- * Readonly 는 초기 설정 후 변경 불가.
- * {
- * readonly darkMode,
- * readonly fontSize
- * }
- */
-
-const jimin: Readonly<UserConfig> = {
-  darkMode: true,
-  fontSize: 20,
-};
-jimin.fontSize = 40; // Error 읽기전용
-```
-
-## 4. Pick<T>
-
-- 필요로한 속성만 별도로 뽑아주는 문법
-
-```ts
-interface GameItem {
-  id: number;
-  name: string;
-  point: number;
-}
-const itemSword: GameItem = {
-  id: 101,
-  name: "좋은 검",
-  point: 1000,
-};
-/*
- * Pick 을 이용한 기존 속성 뽑기
- * {id:number, name:string}
- */
-type ShowItem = Pick<GameItem, "id" | "name">;
-const myItem: ShowItem = {
-  id: 100,
-  name: "좋은 방패",
-};
-```
-
-## 5. Omit<T>
-
-- 특정 속성만 제거하는 문법.
-
-```ts
-interface GameItem {
-  id: number;
-  name: string;
-  point: number;
-}
-const itemSword: GameItem = {
-  id: 101,
-  name: "좋은 검",
-  point: 1000,
-};
-/*
- * Omit 을 이용한 속성 제거하기
- * {id:number, name:string}
- */
-type ShowItem = Omit<GameItem, "point">;
-const myItem: ShowItem = {
-  id: 100,
-  name: "좋은 방패",
-};
-```
-
-## 6. Record<K, T>
-
-- 키~값 쌍으로 된 객체 생성 문법
-
-```ts
-type Subject = "math" | "english" | "scince";
-/*
-* Record 는 속성명과 속성값을 새롭게 만들어줌
-*  {
-    math: number;
-    english: number;
-    scince: number;
-   }
-*/
-type Score = Record<Subject, number>;
-const iu: Score = {
-  math: 90,
-  english: 40,
-  scince: 80,
-};
-```
-
-## 7.Exclude<T, U>
-
-- T에서 U 를 제거하는 타입생성 문법
-
-```ts
-type Subject = "math" | "english" | "scince";
-/*
-* Exclude 는 원본에서 속성을 제거한다.
-    "english" | "scince"
-*/
-type Score = Exclude<Subject, "math">;
-const iu: Score = "english";
-```
-
-```ts
-type Person = "name" | "age" | "city";
-type Daegu = "city";
-// Exclude 에 의해서 속성이 제거됨
-// "name"|"age"
-type Human = Exclude<Person, Daegu>;
-```
-
-## 8. Extract<T, U>
-
-- T에서 U만 남기는 문법
-
-```ts
-type Person = "name" | "age" | "city";
-type Daegu = "city";
-/*
- * Extract 에 의해서 속성이 남게됨
- * "city"
- */
-type Human = Extract<Person, Daegu>;
-```
-
-## 9. ReturnType
-
-- 함수의 리턴종류 타입 추출
-
-```ts
-function getScore() {
-  return { total: 180, grade: "A" };
-}
-/**
- * ReturnType 은 함수의 리턴 데이터 종류 추출
- * {
-    total: number;
-    grade: string;
-   }
- */
-
-type ScoreType = ReturnType<typeof getScore>;
-```
-
-## 10. Parameters
-
-- 함수의 매개변수의 타입을 튜플로 추출
-- 튜플 : `[number,string]`
-
-```ts
-function getScore(subject: string, score: number) {
-  console.log(`${subject}의 점수는 ${score}입니다.`);
-}
-/**
- * ReturnType 은 함수의 매개변수 데이터 종류 추출
- * [subject: string, score: number]
- */
-
-type ScoreType = Parameters<typeof getScore>;
-```
-
-## 11. 종합 응용예제
-
-- 리액트 타입스크립트 버전
-- 회원가입 폼 작성
-- /src/SignUpForm.tsx 생성
-
-### 11.1. 파일 확장자의 이해
-
-- js : js 내용 작성
-- jsx : js + html 내용 리턴
-- ts : ts 내용 작성(js 생성)
-- tsx : ts + html 내용 리턴(jsx 생성)
-
-## 11.2 추후 React TS 버전에서 화룡예정
