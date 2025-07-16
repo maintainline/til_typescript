@@ -1,12 +1,30 @@
-interface IdolType {
-  readonly name: string; // 읽기 전용
-  age?: number; // 옵셔널
-  year: number;
+/**
+ * API 요청을 한다.
+ * 4가지 상태가 흔히 활용된다.
+ *
+ * "DONE" - 요청을 실행함
+ * "LOADING" - 요청이 진행중인 상태
+ * "ERROR" -  요청이 실패 상태
+ * "INIT" - 초기 상태
+ */
+export enum Status {
+  DONE = "DONE",
+  LOADING = "LOADING",
+  ERROR = "ERROR",
+  INIT = "INIT",
 }
-let bts: IdolType = {
-  name: "bts",
-  year: 2020,
-};
 
-bts.name = "홍길동"; //  변경 불가
-bts.year = 22; //  변경가능
+function runNetwork() {
+  let status = Status.INIT;
+  try {
+    status = Status.LOADING;
+    // 복잡한처리...
+    // 복잡한처리...
+    status = Status.DONE;
+  } catch (error) {
+    status = Status.ERROR;
+  } finally {
+    return status;
+  }
+}
+console.log(runNetwork() === Status.DONE);
